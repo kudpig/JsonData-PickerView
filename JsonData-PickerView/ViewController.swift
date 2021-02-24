@@ -13,7 +13,7 @@ struct Country: Decodable {
 }
 
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIPickerViewDelegate,UIPickerViewDataSource {
 
     @IBOutlet weak var displayLable: UILabel!
 
@@ -23,6 +23,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        pickerView.delegate = self
+        pickerView.dataSource = self
         
         // URLの取得
         let url = URL(string: "https://restcountries.eu/rest/v2/all")!
@@ -44,13 +47,33 @@ class ViewController: UIViewController {
                     print("Parse Error")
                 }
                 print(self.countries.count) //?クロージャでの明示的なselfとは
+                
+                // データを取得できたらUIをリロードする
+                // DispatchQueueは一つ以上のタスクを管理するクラス
+                // UIの読込処理はメインスレッドで行う必要があるようなので、mainメソッドにてメインキューに処理を登録する
+                // asyncメソッドは、キューに処理を登録したスレッドが登録した処理が完了するのを「待たない」 要するに非同期処理ということ
+                DispatchQueue.main.async {
+                    // reloadComponent...UIPickerViewクラスのメソッド。列を指定してpickerを更新する
+                    self.pickerView.reloadComponent(0)
+                }
             }
             
-        
         }.resume() // 処理を開始するにはこのメソッドが必要
         
     }
 
-
+    // PickerView methods
+    // 列の数
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    // 行の数
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return countries.count
+    }
+    // rowsに表示する配列の設定
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return countries[row].name
+    }
 }
 
