@@ -75,5 +75,12 @@ class ViewController: UIViewController, UIPickerViewDelegate,UIPickerViewDataSou
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return countries[row].name
     }
+    
+    // delegate method
+    // rowが選択された時の処理
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let selectedCountry = countries[row].name
+        displayLable.text = selectedCountry
+    }
 }
 
